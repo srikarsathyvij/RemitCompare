@@ -12,8 +12,9 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/compare?source=${source}&target=${target}&amount=${amount}`
+        `https://remitcompare.onrender.com/compare?source=${source}&target=${target}&amount=${amount}`
       );
+      
       const result = await response.json();
       setData(result);
     } catch (error) {
