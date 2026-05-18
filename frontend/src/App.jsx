@@ -14,21 +14,26 @@ function App() {
       const response = await fetch(
         `https://remitcompare.onrender.com/compare?source=${source}&target=${target}&amount=${amount}`
       );
-      
+
       const result = await response.json();
+      console.log(result);
       setData(result);
+
     } catch (error) {
       console.error("Frontend error:", error);
+      alert("Something went wrong. Check console.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
     <div style={pageStyle}>
       <div style={topBar}>
         <div style={logoStyle}>RemitCompare</div>
-        <div style={navText}>Live FX • UAE Remittance • Smart Comparison</div>
+        <div style={navText}>
+          Live FX • UAE Remittance • Smart Comparison
+        </div>
       </div>
 
       <main style={mainStyle}>
@@ -41,7 +46,7 @@ function App() {
 
           <p style={subtitleStyle}>
             Compare live Wise rates against selected UAE remittance providers and
-            instantly see who gives the recipient the highest amount.
+            instantly see who gives the recipient the highest amount after fees.
           </p>
 
           <div style={statsRow}>
@@ -49,13 +54,15 @@ function App() {
               <strong>Live API</strong>
               <span>Wise integration</span>
             </div>
+
+            <div style={statCard}>
+              <strong>Fee Aware</strong>
+              <span>Real recipient value</span>
+            </div>
+
             <div style={statCard}>
               <strong>Ranked</strong>
               <span>Best provider first</span>
-            </div>
-            <div style={statCard}>
-              <strong>Instant</strong>
-              <span>Real-time comparison</span>
             </div>
           </div>
         </section>
@@ -65,6 +72,7 @@ function App() {
             <h2 style={{ marginTop: 0 }}>Compare Transfer</h2>
 
             <label>Amount</label>
+
             <input
               type="number"
               value={amount}
@@ -75,7 +83,12 @@ function App() {
             <div style={twoColumn}>
               <div>
                 <label>From</label>
-                <select value={source} onChange={(e) => setSource(e.target.value)} style={inputStyle}>
+
+                <select
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  style={inputStyle}
+                >
                   <option>AED</option>
                   <option>USD</option>
                   <option>QAR</option>
@@ -84,7 +97,12 @@ function App() {
 
               <div>
                 <label>To</label>
-                <select value={target} onChange={(e) => setTarget(e.target.value)} style={inputStyle}>
+
+                <select
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value)}
+                  style={inputStyle}
+                >
                   <option>INR</option>
                   <option>PKR</option>
                   <option>PHP</option>
@@ -101,7 +119,10 @@ function App() {
             <div style={resultBox}>
               <div style={bestHeader}>
                 <span>Best Provider</span>
-                <strong>{data.best_provider}</strong>
+
+                <strong>
+                  {data.best_provider}
+                </strong>
               </div>
 
               <div style={resultsGrid}>
@@ -110,14 +131,37 @@ function App() {
                     key={index}
                     style={{
                       ...resultItem,
-                      border: index === 0 ? "1px solid #38bdf8" : "1px solid rgba(148,163,184,0.18)"
+                      border:
+                        index === 0
+                          ? "1px solid #38bdf8"
+                          : "1px solid rgba(148,163,184,0.18)"
                     }}
                   >
                     <div style={rankBadge}>#{index + 1}</div>
+
                     <h3>{item.provider}</h3>
-                    <p>Rate: {item.rate}</p>
+
                     <p>
-                      Recipient gets: <strong>{item.recipient_gets} {target}</strong>
+                      Exchange Rate:{" "}
+                      <strong>{item.rate}</strong>
+                    </p>
+
+                    <p>
+                      Transfer Fee: <strong>{item.fee} {source}</strong>
+                    </p>
+
+                    <p>
+                      Amount After Fee:{" "}
+                      <strong>
+                        {item.amount_after_fee} {source}
+                      </strong>
+                    </p>
+
+                    <p style={{ marginTop: "14px", fontSize: "18px" }}>
+                      Recipient Gets:{" "}
+                      <strong style={{ color: "#38bdf8" }}>
+                        {item.recipient_gets} {target}
+                      </strong>
                     </p>
                   </div>
                 ))}
@@ -133,7 +177,8 @@ function App() {
 const pageStyle = {
   minHeight: "100vh",
   width: "100%",
-  background: "radial-gradient(circle at top left, #1d4ed8 0%, #020617 38%, #020617 100%)",
+  background:
+    "radial-gradient(circle at top left, #1d4ed8 0%, #020617 38%, #020617 100%)",
   color: "white",
   fontFamily: "'Space Grotesk', Arial, sans-serif",
   boxSizing: "border-box"
