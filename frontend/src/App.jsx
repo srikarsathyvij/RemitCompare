@@ -7,6 +7,8 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const isMobile = window.innerWidth <= 768;
+
   async function compareRates() {
     setLoading(true);
 
@@ -18,7 +20,6 @@ function App() {
       const result = await response.json();
       console.log(result);
       setData(result);
-
     } catch (error) {
       console.error("Frontend error:", error);
       alert("Something went wrong. Check console.");
@@ -29,27 +30,28 @@ function App() {
 
   return (
     <div style={pageStyle}>
-      <div style={topBar}>
+      <div style={isMobile ? { ...topBar, ...topBarMobile } : topBar}>
         <div style={logoStyle}>RemitCompare</div>
-        <div style={navText}>
+
+        <div style={isMobile ? { ...navText, display: "none" } : navText}>
           Live FX • UAE Remittance • Smart Comparison
         </div>
       </div>
 
-      <main style={mainStyle}>
+      <main style={isMobile ? { ...mainStyle, ...mainStyleMobile } : mainStyle}>
         <section style={heroStyle}>
           <p style={tagStyle}>FINTECH REMITTANCE COMPARATOR</p>
 
-          <h1 style={titleStyle}>
+          <h1 style={isMobile ? { ...titleStyle, ...titleStyleMobile } : titleStyle}>
             Find the best way to send money abroad.
           </h1>
 
-          <p style={subtitleStyle}>
+          <p style={isMobile ? { ...subtitleStyle, ...subtitleStyleMobile } : subtitleStyle}>
             Compare live Wise rates against selected UAE remittance providers and
             instantly see who gives the recipient the highest amount after fees.
           </p>
 
-          <div style={statsRow}>
+          <div style={isMobile ? { ...statsRow, ...statsRowMobile } : statsRow}>
             <div style={statCard}>
               <strong>Live API</strong>
               <span>Wise integration</span>
@@ -68,7 +70,7 @@ function App() {
         </section>
 
         <section style={panelStyle}>
-          <div style={cardStyle}>
+          <div style={isMobile ? { ...cardStyle, ...cardStyleMobile } : cardStyle}>
             <h2 style={{ marginTop: 0 }}>Compare Transfer</h2>
 
             <label>Amount</label>
@@ -80,7 +82,7 @@ function App() {
               style={inputStyle}
             />
 
-            <div style={twoColumn}>
+            <div style={isMobile ? { ...twoColumn, ...twoColumnMobile } : twoColumn}>
               <div>
                 <label>From</label>
 
@@ -116,16 +118,14 @@ function App() {
           </div>
 
           {data && (
-            <div style={resultBox}>
-              <div style={bestHeader}>
+            <div style={isMobile ? { ...resultBox, ...resultBoxMobile } : resultBox}>
+              <div style={isMobile ? { ...bestHeader, ...bestHeaderMobile } : bestHeader}>
                 <span>Best Provider</span>
 
-                <strong>
-                  {data.best_provider}
-                </strong>
+                <strong>{data.best_provider}</strong>
               </div>
 
-              <div style={resultsGrid}>
+              <div style={isMobile ? { ...resultsGrid, ...resultsGridMobile } : resultsGrid}>
                 {data.results?.map((item, index) => (
                   <div
                     key={index}
@@ -142,12 +142,14 @@ function App() {
                     <h3>{item.provider}</h3>
 
                     <p>
-                      Exchange Rate:{" "}
-                      <strong>{item.rate}</strong>
+                      Exchange Rate: <strong>{item.rate}</strong>
                     </p>
 
                     <p>
-                      Transfer Fee: <strong>{item.fee} {source}</strong>
+                      Transfer Fee:{" "}
+                      <strong>
+                        {item.fee} {source}
+                      </strong>
                     </p>
 
                     <p>
@@ -157,7 +159,7 @@ function App() {
                       </strong>
                     </p>
 
-                    <p style={{ marginTop: "14px", fontSize: "18px" }}>
+                    <p style={{ marginTop: "14px", fontSize: isMobile ? "16px" : "18px" }}>
                       Recipient Gets:{" "}
                       <strong style={{ color: "#38bdf8" }}>
                         {item.recipient_gets} {target}
@@ -181,7 +183,8 @@ const pageStyle = {
     "radial-gradient(circle at top left, #1d4ed8 0%, #020617 38%, #020617 100%)",
   color: "white",
   fontFamily: "'Space Grotesk', Arial, sans-serif",
-  boxSizing: "border-box"
+  boxSizing: "border-box",
+  overflowX: "hidden"
 };
 
 const topBar = {
@@ -190,7 +193,13 @@ const topBar = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  borderBottom: "1px solid rgba(148,163,184,0.16)"
+  borderBottom: "1px solid rgba(148,163,184,0.16)",
+  boxSizing: "border-box"
+};
+
+const topBarMobile = {
+  height: "64px",
+  padding: "0 20px"
 };
 
 const logoStyle = {
@@ -213,6 +222,14 @@ const mainStyle = {
   boxSizing: "border-box"
 };
 
+const mainStyleMobile = {
+  minHeight: "auto",
+  display: "flex",
+  flexDirection: "column",
+  gap: "28px",
+  padding: "28px 18px 40px"
+};
+
 const heroStyle = {
   display: "flex",
   flexDirection: "column",
@@ -223,7 +240,8 @@ const tagStyle = {
   color: "#38bdf8",
   fontWeight: "800",
   letterSpacing: "2px",
-  fontSize: "14px"
+  fontSize: "13px",
+  margin: 0
 };
 
 const titleStyle = {
@@ -234,11 +252,23 @@ const titleStyle = {
   maxWidth: "720px"
 };
 
+const titleStyleMobile = {
+  fontSize: "38px",
+  lineHeight: "1.05",
+  letterSpacing: "-1.5px",
+  margin: "18px 0"
+};
+
 const subtitleStyle = {
   color: "#bfdbfe",
   fontSize: "20px",
   lineHeight: "1.7",
   maxWidth: "680px"
+};
+
+const subtitleStyleMobile = {
+  fontSize: "16px",
+  lineHeight: "1.6"
 };
 
 const statsRow = {
@@ -247,6 +277,12 @@ const statsRow = {
   gap: "16px",
   marginTop: "36px",
   maxWidth: "680px"
+};
+
+const statsRowMobile = {
+  gridTemplateColumns: "1fr",
+  gap: "12px",
+  marginTop: "24px"
 };
 
 const statCard = {
@@ -272,13 +308,25 @@ const cardStyle = {
   border: "1px solid rgba(148, 163, 184, 0.24)",
   borderRadius: "28px",
   padding: "32px",
-  boxShadow: "0 30px 90px rgba(0,0,0,0.45)"
+  boxShadow: "0 30px 90px rgba(0,0,0,0.45)",
+  boxSizing: "border-box",
+  width: "100%"
+};
+
+const cardStyleMobile = {
+  padding: "22px",
+  borderRadius: "22px"
 };
 
 const twoColumn = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
   gap: "16px"
+};
+
+const twoColumnMobile = {
+  gridTemplateColumns: "1fr",
+  gap: "0"
 };
 
 const inputStyle = {
@@ -290,7 +338,8 @@ const inputStyle = {
   background: "#020617",
   color: "white",
   fontSize: "16px",
-  boxSizing: "border-box"
+  boxSizing: "border-box",
+  outline: "none"
 };
 
 const buttonStyle = {
@@ -309,7 +358,14 @@ const resultBox = {
   background: "rgba(2,6,23,0.86)",
   border: "1px solid rgba(148,163,184,0.2)",
   borderRadius: "28px",
-  padding: "26px"
+  padding: "26px",
+  boxSizing: "border-box",
+  width: "100%"
+};
+
+const resultBoxMobile = {
+  padding: "20px",
+  borderRadius: "22px"
 };
 
 const bestHeader = {
@@ -317,7 +373,14 @@ const bestHeader = {
   justifyContent: "space-between",
   alignItems: "center",
   marginBottom: "20px",
-  fontSize: "18px"
+  fontSize: "18px",
+  gap: "12px"
+};
+
+const bestHeaderMobile = {
+  flexDirection: "column",
+  alignItems: "flex-start",
+  fontSize: "16px"
 };
 
 const resultsGrid = {
@@ -326,11 +389,17 @@ const resultsGrid = {
   gap: "16px"
 };
 
+const resultsGridMobile = {
+  gridTemplateColumns: "1fr"
+};
+
 const resultItem = {
   position: "relative",
   background: "#0f172a",
   borderRadius: "20px",
-  padding: "20px"
+  padding: "20px",
+  boxSizing: "border-box",
+  wordBreak: "break-word"
 };
 
 const rankBadge = {
